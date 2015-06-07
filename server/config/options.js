@@ -3,7 +3,7 @@
 var path = require('path');
 
 var config = {
-  port: '8081',
+  port: '8080',
   mongo: {
     uri: 'mongodb://localhost/timezones',
     options: {
