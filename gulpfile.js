@@ -27,8 +27,28 @@ server.all('/*', function(req, res) {
 });
 
 // Dev task
-gulp.task('dev', ['views', 'styles', 'lint', 'browserify'], function() { });
-gulp.task('build', ['clean', 'views', 'styles', 'lint', 'browserify'], function() { });
+gulp.task('dev', ['views', 'styles', 'lint', 'browserify', 'copy'], function() { });
+gulp.task('build', ['clean', 'views', 'styles', 'lint', 'browserify', 'copy'], function() { });
+
+gulp.task('copy', ['copyVendor', 'copyImages']);
+
+gulp.task('copyVendor', function () {
+  return gulp.src([
+      'app/vendor/**/*'
+    ], {
+      dot: true
+    })
+    .pipe(gulp.dest('public/vendor'));
+});
+
+gulp.task('copyImages', function () {
+  return gulp.src([
+      'app/images/**/*'
+    ], {
+      dot: true
+    })
+    .pipe(gulp.dest('public/images'));
+});
 
 // Clean task - Deletes the output directories
 gulp.task('clean', del.bind(null, ['.tmp', 'public'], {force: true}));
