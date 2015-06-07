@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="UTF-8">
+  <title>Angular Boilerplate</title>
+  <link rel="stylesheet" href="styles/app.css">
+  <!-- Google Maps -->
+  <script src='//maps.googleapis.com/maps/api/js?libraries=places&sensor=false'></script>
+
+  <!-- Materialize: Used only for styling purposes, can be removed -->
+  <link rel="stylesheet" href="vendor/materialize-css/bin/materialize.css">
+</head>
+<body ng-controller="LocationsCtrl">
+  <main class="app">
+    <h1>Angular Maps Demo</h1>
+
+    <!-- Input form -->
+    <form ng-submit="submit($event)">
+      <label for="">Enter location:</label>
+      <input type="text" placeholder="E.g. New York" ng-autocomplete ng-model="location" details="details" options="options">
+      <button class="waves-effect waves-light btn" type="submit">Search</button>
+      <div class="error red-text text-darken-4"ng-show="error">{{error}}</div>
+    </form>
+
+    <div class="location-data__container" ng-show="activeLocation">
+      <h3 class="location-data__title">Location data:</h3>
+
+      <ul class="location-data__list">
+        <li>Name: {{ activeLocation.name }}</li>
+        <li>Time difference (from UTC): {{ activeLocation.timezoneOffset / 3600 }}h</li>
+        <li>Coordinates: {{activeLocation.latitude}},{{activeLocation.longitude}}</li>
+      </ul>
+    </div>
+
+    <!-- Map with locations -->
+    <section class="map__container">
+      <ui-gmap-google-map class="map" center='map.center' zoom='map.zoom'>
+        <div ng-repeat="location in locations">
+          <ui-gmap-marker coords="location" idkey="location._id"></ui-gmap-marker>
+        </div>
+      </ui-gmap-google-map>
+    </section>
+
+    <ul ng-repeat="location in locations">
+      <li>
+        <em>{{location.name}}</em>: {{location.timezoneOffset / 3600}}
+      </li>
+    </ul>
+  </main>
+
+  <!-- <script src="../node_modules/socket.io-client/socket.io.js"></script> -->
+  <script src="scripts/bundle.js"></script>
+
+  <!-- Materialize: Used only for styling purposes, can be removed -->
+  <!-- <script src="vendor/jquery/dist/jquery.min.js"></script -->
+  <!-- <script src="vendor/materialize-css/bin/materialize.js"></script> -->
+</body>
+</html>

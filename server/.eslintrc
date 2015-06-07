@@ -1,0 +1,24 @@
+{
+    "env": {
+        "node": true
+    },
+    "ecmaFeatures": {
+        "blockBindings": true,
+        "forOf": true
+    },
+    "rules": {
+        "semi": 4,
+        "quotes": [1, "single"],
+        "strict": 0,
+        "no-trailing-spaces": true,
+        "no-unused-vars": [1],
+        "global-strict": true,
+        "no-console": [0],
+        "no-debugger": [1]
+    },
+    "globals": {
+      "require": true,
+      "module": true,
+      "exports": true
+    }
+}
