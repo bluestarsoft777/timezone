@@ -8046,7 +8046,7 @@ button.picker__today:focus, button.picker__clear:focus, button.picker__close:foc
     margin-bottom: 5em; } }
 
 .map__container {
-  margin-top: 60px;
+  margin: 60px 0 120px 0;
   height: 0;
   padding-bottom: 55%;
   position: relative; }

@@ -166,7 +166,7 @@ function getLocation(locations, locationId) {
   });
 }
 
-}).call(this,require("oMfpAn"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_499701aa.js","/")
+}).call(this,require("oMfpAn"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_fa667b83.js","/")
 },{"./LocationService":1,"./socket/SocketService":3,"angular":7,"angular-google-maps":4,"angular-socket-io":5,"buffer":8,"lodash":15,"lodash/collection/find":14,"lodash/lang/isEmpty":56,"ng-autocomplete":68,"oMfpAn":11}],3:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 /* global io */
@@ -58003,18 +58003,6 @@ angular.module( "ngAutocomplete", [])
             }
           }
         }
-
-        // Custom code to make autocomplete field pass autocomplete value to the model when enter is pressed
-        // element.bind("keydown keypress", function(event) {
-        //   console.log('key registered');
-        //   if(event.which === 13) {
-        //     console.log('enter registered');
-        //     scope.$apply(function () {
-        //       controller.$setViewValue(element.val());
-        //     });
-        //   }
-        // });
-        // end of custom code
 
         if (scope.gPlace == undefined) {
           scope.gPlace = new google.maps.places.Autocomplete(element[0], {});
