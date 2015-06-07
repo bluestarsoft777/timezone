@@ -105,7 +105,7 @@ app.controller('LocationsCtrl', function ($scope, LocationService) {
 
   $scope.$on('activeLocationSelected', function (event, selectedLocationId) {
     $scope.activeLocation = getLocation($scope.locations, selectedLocationId);
-  })
+  });
 
   // location form submit
   $scope.submitForm = function (data) {
@@ -128,20 +128,11 @@ app.controller('LocationsCtrl', function ($scope, LocationService) {
     this.details = null;  // reset details
 
     // check if the location is available locally first...
-    // this.activeLocation = find(this.locations, function (loc) {
-    //     return loc._id == location._id;
-    // });
-
-
-    // this.activeLocation = find(this.locations, function (loc) {
-        // return loc._id == details.id;
-    // });
-    // setActiveLocation(this, location._id);
     this.activeLocation = getLocation(this.locations, details.id);
     if (this.activeLocation) {
       return;
     }
-    // ...otherwise query for it
+    // ...otherwise query for it...
     var self = this;
     LocationService.create(location)
     .then(function (response) {
@@ -166,7 +157,7 @@ function getLocation(locations, locationId) {
   });
 }
 
-}).call(this,require("oMfpAn"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_6585e9a5.js","/")
+}).call(this,require("oMfpAn"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_a2bfc779.js","/")
 },{"./LocationService":1,"./socket/SocketService":3,"angular":7,"angular-google-maps":4,"angular-socket-io":5,"buffer":8,"lodash":15,"lodash/collection/find":14,"lodash/lang/isEmpty":56,"ng-autocomplete":68,"oMfpAn":11}],3:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 /* global io */

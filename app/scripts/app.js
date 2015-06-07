@@ -52,7 +52,7 @@ app.controller('LocationsCtrl', function ($scope, LocationService) {
 
   $scope.$on('activeLocationSelected', function (event, selectedLocationId) {
     $scope.activeLocation = getLocation($scope.locations, selectedLocationId);
-  })
+  });
 
   // location form submit
   $scope.submitForm = function (data) {
@@ -75,20 +75,11 @@ app.controller('LocationsCtrl', function ($scope, LocationService) {
     this.details = null;  // reset details
 
     // check if the location is available locally first...
-    // this.activeLocation = find(this.locations, function (loc) {
-    //     return loc._id == location._id;
-    // });
-
-
-    // this.activeLocation = find(this.locations, function (loc) {
-        // return loc._id == details.id;
-    // });
-    // setActiveLocation(this, location._id);
     this.activeLocation = getLocation(this.locations, details.id);
     if (this.activeLocation) {
       return;
     }
-    // ...otherwise query for it
+    // ...otherwise query for it...
     var self = this;
     LocationService.create(location)
     .then(function (response) {
