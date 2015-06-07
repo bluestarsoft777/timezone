@@ -65,6 +65,7 @@ var isEmpty = require('lodash/lang/isEmpty');
 require('angular-google-maps');
 require('ng-autocomplete');
 require('angular-socket-io');
+// require('angucomplete-alt');
 
 var app = angular.module('myApp', [
   'uiGmapgoogle-maps',
@@ -76,16 +77,19 @@ app.factory('SocketService', ['socketFactory', SocketService]);
 app.factory('LocationService', ['$http', '$rootScope', 'SocketService', LocationService]);
 
 app.controller('LocationsCtrl', function ($scope, LocationService) {
+  // general map settings
+  $scope.map = { center: { latitude: 21.596151, longitude: -42.520753 }, zoom: 1 };
 
   // autocomplete
   $scope.options = {
-    types: '(cities)',  // filter only cities
-    watchEnter: true    // select the first result on enter
+    types: '(cities)',          // filter only cities
+  watchEnter: true              // select the first result on enter
   };
-  $scope.details = null;
-  $scope.location = null;
-  $scope.activeLocation = null;
-  $scope.error = '';
+  $scope.details = null;        // details about cities
+  $scope.location = '';         // current location by name, bound to autocomplete input
+  $scope.error = '';            // will hold an error message, if there's any
+
+  $scope.activeLocation = null; // currently active location
 
   // get current locations and listen for change events
   $scope.locations = LocationService.getAll();
@@ -93,24 +97,26 @@ app.controller('LocationsCtrl', function ($scope, LocationService) {
     $scope.locations = LocationService.getAll();
   });
 
+  // The autocomplete lib is buggy, so I'm using this as a workaround
+  // submit form when the results are available, not before
+  $scope.$on('ngAutocomplete:place_changed', function (event, data) {
+    $scope.submitForm(data);
+  });
+
+  $scope.$on('activeLocationSelected', function (event, selectedLocationId) {
+    $scope.activeLocation = getLocation($scope.locations, selectedLocationId);
+  })
 
   // location form submit
-  $scope.submit = function (event) {
-    event.preventDefault();
+  $scope.submitForm = function (data) {
+    this.error = '';
 
-    if (!this.location) {
-      this.error = 'Can\'t search while the input is empty.';
+    // var details = this.details; // don't use this, it won't be updated in time
+    var details = data;
+    if (isEmpty(details)) {
+      this.error = 'Please select a town from the list.';
       return;
     }
-
-    // get location info
-    var details = this.details;
-
-    if (isEmpty(this.details)) {
-      this.error = 'Coulnd\'t find a town with that name, try again.';
-      return;
-    }
-
 
     var location = {
       _id: details.id,
@@ -119,13 +125,22 @@ app.controller('LocationsCtrl', function ($scope, LocationService) {
       longitude: details.geometry.location.lng()
     };
 
+    this.details = null;  // reset details
+
     // check if the location is available locally first...
-    this.activeLocation = find(this.locations, function (loc) {
-        return loc._id == location._id;
-    });
-    if (this.activeLocation) return;
+    // this.activeLocation = find(this.locations, function (loc) {
+    //     return loc._id == location._id;
+    // });
 
 
+    // this.activeLocation = find(this.locations, function (loc) {
+        // return loc._id == details.id;
+    // });
+    // setActiveLocation(this, location._id);
+    this.activeLocation = getLocation(this.locations, details.id);
+    if (this.activeLocation) {
+      return;
+    }
     // ...otherwise query for it
     var self = this;
     LocationService.create(location)
@@ -133,17 +148,25 @@ app.controller('LocationsCtrl', function ($scope, LocationService) {
       self.activeLocation = response.data;
     })
     .catch(function (error) {
-      console.log('Error creating location');
       console.error(error);
-      self.error = "Error happened while searching for the location.";
+      self.error = 'Error happened while searching for the location.';
     });
   };
 
-  // general map settings
-  $scope.map = { center: { latitude: 21.596151, longitude: -42.520753 }, zoom: 1 };
+  // Select location when marker is clicked
+  $scope.selectLocation = function (marker, event, $markerScope, googleArguments) {
+    var locationId = marker.key;
+    $scope.$emit('activeLocationSelected', locationId);
+  };
 });
 
-}).call(this,require("oMfpAn"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_8deda5bf.js","/")
+function getLocation(locations, locationId) {
+  return find(locations, function (loc) {
+      return loc._id == locationId;
+  });
+}
+
+}).call(this,require("oMfpAn"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/fake_499701aa.js","/")
 },{"./LocationService":1,"./socket/SocketService":3,"angular":7,"angular-google-maps":4,"angular-socket-io":5,"buffer":8,"lodash":15,"lodash/collection/find":14,"lodash/lang/isEmpty":56,"ng-autocomplete":68,"oMfpAn":11}],3:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
 /* global io */
@@ -57981,6 +58004,18 @@ angular.module( "ngAutocomplete", [])
           }
         }
 
+        // Custom code to make autocomplete field pass autocomplete value to the model when enter is pressed
+        // element.bind("keydown keypress", function(event) {
+        //   console.log('key registered');
+        //   if(event.which === 13) {
+        //     console.log('enter registered');
+        //     scope.$apply(function () {
+        //       controller.$setViewValue(element.val());
+        //     });
+        //   }
+        // });
+        // end of custom code
+
         if (scope.gPlace == undefined) {
           scope.gPlace = new google.maps.places.Autocomplete(element[0], {});
         }
@@ -57992,6 +58027,7 @@ angular.module( "ngAutocomplete", [])
               scope.$apply(function() {
 
                 scope.details = result;
+                scope.$emit('ngAutocomplete:place_changed', result);
 
                 controller.$setViewValue(element.val());
               });
@@ -58004,7 +58040,7 @@ angular.module( "ngAutocomplete", [])
           }
         })
 
-        //function to get retrieve the autocompletes first result using the AutocompleteService 
+        //function to get retrieve the autocompletes first result using the AutocompleteService
         var getPlace = function(result) {
           var autocompleteService = new google.maps.places.AutocompleteService();
           if (result.name.length > 0){
@@ -58033,6 +58069,7 @@ angular.module( "ngAutocomplete", [])
                           element.val(detailsResult.formatted_address);
 
                           scope.details = detailsResult;
+                          scope.$emit('ngAutocomplete:place_changed', detailsResult);
 
                           //on focusout the value reverts, need to set it again.
                           var watchFocusOut = element.on('focusout', function(event) {
@@ -58065,6 +58102,7 @@ angular.module( "ngAutocomplete", [])
       }
     };
   });
+
 }).call(this,require("oMfpAn"),typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer,arguments[3],arguments[4],arguments[5],arguments[6],"/../../node_modules/ng-autocomplete/src/ngAutocomplete.js","/../../node_modules/ng-autocomplete/src")
 },{"buffer":8,"oMfpAn":11}],69:[function(require,module,exports){
 (function (process,global,Buffer,__argument0,__argument1,__argument2,__argument3,__filename,__dirname){
